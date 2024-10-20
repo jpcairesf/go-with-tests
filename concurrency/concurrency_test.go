@@ -17,14 +17,14 @@ func slowStubWebsiteChecker(_ string) bool {
 
 func TestCheckWebsites(t *testing.T) {
 	websites := []string{
-		"http://google.com",
-		"http://github.com",
+		"https://google.com",
+		"https://github.com",
 		"mock://website.com",
 	}
 
 	want := map[string]bool{
-		"http://google.com":  true,
-		"http://github.com":  true,
+		"https://google.com": true,
+		"https://github.com": true,
 		"mock://website.com": false,
 	}
 
