@@ -7,6 +7,15 @@ import (
 	"time"
 )
 
+func newDelayedServer(delay time.Duration) *httptest.Server {
+	slowServer := httptest.NewServer(http.HandlerFunc(
+		func(writer http.ResponseWriter, _ *http.Request) {
+			time.Sleep(delay)
+			writer.WriteHeader(http.StatusOK)
+		}))
+	return slowServer
+}
+
 func TestRacer(t *testing.T) {
 	t.Run("compares speeds of servers, returning the url of the fastest one",
 		func(t *testing.T) {
@@ -19,7 +28,7 @@ func TestRacer(t *testing.T) {
 			defer fastServer.Close()
 
 			want := fastURL
-			got, err := ConfigurableRacer(slowURL, fastURL, 1*time.Second)
+			got, err := Racer(slowURL, fastURL)
 			if err != nil {
 				t.Error(err)
 			}
@@ -37,18 +46,9 @@ func TestRacer(t *testing.T) {
 			serverB := newDelayedServer(11 * time.Millisecond)
 			defer serverB.Close()
 
-			_, err := Racer(serverA.URL, serverB.URL)
+			_, err := ConfigurableRacer(serverA.URL, serverB.URL, 10*time.Millisecond)
 			if err == nil {
 				t.Error("got nil, want error")
 			}
 		})
-}
-
-func newDelayedServer(delay time.Duration) *httptest.Server {
-	slowServer := httptest.NewServer(http.HandlerFunc(
-		func(writer http.ResponseWriter, _ *http.Request) {
-			time.Sleep(delay)
-			writer.WriteHeader(http.StatusOK)
-		}))
-	return slowServer
 }
