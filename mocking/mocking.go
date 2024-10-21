@@ -1,16 +1,10 @@
-package main
+package mocking
 
 import (
 	"fmt"
 	"io"
-	"os"
 	"time"
 )
-
-func main() {
-	sleeper := &ConfigurableSleeper{1 * time.Second, time.Sleep}
-	Countdown(os.Stdout, sleeper)
-}
 
 type Sleeper interface {
 	Sleep()
